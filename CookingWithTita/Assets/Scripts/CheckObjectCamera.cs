@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CheckObjectCamera : MonoBehaviour {
 
@@ -11,10 +13,13 @@ public class CheckObjectCamera : MonoBehaviour {
 
     #endregion
     #region Event Data
+    public event Action<Transform> InteractWithObjectEvent;
+
     public void OnActionKeyPressed() {
         foreach (InteractableObject i in _gameManager.interfactableObjectList) {
             if (i.isInView) {
-                Debug.Log("Interacting with " + i.name);
+                if (InteractWithObjectEvent != null)
+                    InteractWithObjectEvent(i.transform);
             }
         }
     }

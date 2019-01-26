@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 201f0bb6093aec744b11cb7206a74154
+guid: e5c1729cb24ac6140bd81a9c0066ad1a
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -8,7 +8,7 @@ ModelImporter:
     2100000: 'Material #24'
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Kitchen
+    4300000: Line001
   externalObjects: {}
   materials:
     importMaterials: 1
