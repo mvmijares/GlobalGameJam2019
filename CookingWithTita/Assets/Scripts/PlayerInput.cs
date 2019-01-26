@@ -9,106 +9,167 @@ using InControl;
 /// This class handles all our player input for our game.
 /// It will fire off events for input. If other classes need it, just register the input event
 /// </summary>
-public class JoystickInput : PlayerActionSet {
 
-    public PlayerAction MoveUp;
-    public PlayerAction MoveDown;
-    public PlayerAction MoveLeft;
-    public PlayerAction MoveRight;
-    public PlayerOneAxisAction MoveVertical;
-    public PlayerOneAxisAction MoveHorizontal;
-    public PlayerTwoAxisAction Movement;
+public enum JoystickDirection { Clockwise, CounterClockwise } // Add later
+[Serializable]
+public class JoystickCombo {
+    public string name;
+    List<Vector2> joystickPositions;
+    public int index;
+    public float lowerDeadZoneX;
+    public float upperDeadZoneX;
 
-    public PlayerAction LookUp;
-    public PlayerAction LookDown;
-    public PlayerAction LookLeft;
-    public PlayerAction LookRight;
-    public PlayerOneAxisAction LookVertical;
-    public PlayerOneAxisAction LookHorizontal;
-    public PlayerTwoAxisAction Look;
+    public float lowerDeadZoneY;
+    public float upperDeadZoneY;
 
-    public PlayerAction ActionButton;
-    public PlayerAction Start;
+    public bool comboCompleted;
+    public JoystickCombo(string name) {
+        joystickPositions = new List<Vector2>();
+        index = 0;
+        switch (name) {
+            case "Circle": {
+                    this.name = name;
+                    joystickPositions = CreateCircleInputs();
+                    break;
+                }
+        }
+        comboCompleted = false;
+    }
+    List<Vector2> CreateCircleInputs() {
+        List<Vector2> newList = new List<Vector2>();
 
-    public JoystickInput() {
-        MoveUp = CreatePlayerAction("Move Up");
-        MoveDown = CreatePlayerAction("Move Down");
-        MoveLeft = CreatePlayerAction("Move Left");
-        MoveRight = CreatePlayerAction("Move Right");
+        newList.Add(new Vector2(0,1));
+        newList.Add(new Vector2(-1, 0));
+        newList.Add(new Vector2(0, -1));
+        newList.Add(new Vector2(1, 0));
+        newList.Add(new Vector2(0, 1));
 
-        MoveVertical = CreateOneAxisPlayerAction(MoveDown,MoveUp);
-        MoveHorizontal = CreateOneAxisPlayerAction(MoveLeft, MoveRight);
-        Movement = CreateTwoAxisPlayerAction(MoveLeft, MoveRight, MoveDown, MoveUp);
-
-        LookUp = CreatePlayerAction("Look Up");
-        LookDown = CreatePlayerAction("Look Down");
-        LookLeft = CreatePlayerAction("Look Left");
-        LookRight = CreatePlayerAction("Look Right");
-
-        LookVertical = CreateOneAxisPlayerAction(LookDown, LookUp);
-        LookHorizontal = CreateOneAxisPlayerAction(LookLeft, LookRight);
-        Look = CreateTwoAxisPlayerAction(LookLeft, LookRight, LookDown, LookUp);
-
-        ActionButton = CreatePlayerAction("Action Button");
-        Start = CreatePlayerAction("Start");
+        return newList;
+    }
+    public bool CheckInput(Vector2 input) {
+        bool condition = false;
+        if (input.x < joystickPositions[index].x + upperDeadZoneX && input.x > joystickPositions[index].x + lowerDeadZoneX) {
+            if (input.y < joystickPositions[index].y + upperDeadZoneX && input.y > joystickPositions[index].y + lowerDeadZoneY) {
+                condition = true;
+            } else {
+                condition = false;
+            }
+        } else {
+            condition = false;
+        }
+        if (condition)
+            return true;
+        else
+            return false;
 
     }
 
-    public JoystickInput CreateDefaultJoystickBindings() {
-        JoystickInput newJoystickInput = new JoystickInput();
-
-        newJoystickInput.MoveUp.AddDefaultBinding(InputControlType.LeftStickUp);
-        newJoystickInput.MoveDown.AddDefaultBinding(InputControlType.LeftStickDown);
-        newJoystickInput.MoveLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
-        newJoystickInput.MoveRight.AddDefaultBinding(InputControlType.LeftStickRight);
-
-        newJoystickInput.LookUp.AddDefaultBinding(InputControlType.RightStickUp);
-        newJoystickInput.LookDown.AddDefaultBinding(InputControlType.RightStickDown);
-        newJoystickInput.LookLeft.AddDefaultBinding(InputControlType.RightStickLeft);
-        newJoystickInput.LookRight.AddDefaultBinding(InputControlType.RightStickRight);
-
-        newJoystickInput.ActionButton.AddDefaultBinding(InputControlType.Action1);
-        newJoystickInput.Start.AddDefaultBinding(InputControlType.Command);
-        
-
-        newJoystickInput.ListenOptions.OnBindingFound = (action, binding) => {
-            if (binding == new KeyBindingSource(Key.Escape)) {
-                action.StopListeningForBinding();
-                return false;
-            }
-            return true;
-        };
-
-        return newJoystickInput;
-
+    public int GetComboLength() {
+        return joystickPositions.Count;
     }
 }
-
-
 public class PlayerInput : MonoBehaviour {
 
     #region Data
+    private GameManager _gameManager;
     private Player _player;
     private JoystickInput input;
     private InputDevice inputDevice;
 
+
+    //Prototype Section
+    public JoystickCombo circleCombo;
+
+    [SerializeField] bool isComboCoroutineRunning;
+    [Tooltip("Time for next combo")]
+    public float waitForNextComboIteration = 0.2f;
+    private bool waitForNextCombo = false;
+    private bool checkCombo = false;
+    public float comboTimeLength;
+    [SerializeField] private float currentComboTime;
+    TwoAxisInputControl rightStickInput;
     #endregion
     #region Event Data
     public event Action<Vector2> OnMovementEvent;
     public event Action<Vector2> OnLookEvent;
+    public event Action OnActionKeyPressedEvent;
 
     #endregion
-    public void InitializePlayerController(Player player) {
+    public void InitializePlayerController(Player player, GameManager gameManager) {
         _player = player;
+        _gameManager = gameManager;
+
         input = new JoystickInput();
         input.CreateDefaultJoystickBindings();
+
+        circleCombo = new JoystickCombo("Circle");
+        circleCombo.lowerDeadZoneX = -.2f;
+        circleCombo.upperDeadZoneX = .2f;
+        circleCombo.lowerDeadZoneY = -.2f;
+        circleCombo.upperDeadZoneY = .2f;
+
+        isComboCoroutineRunning = false;
     }
 
     public void UpdatePlayerInput() {
+        rightStickInput = InputManager.ActiveDevice.RightStick;
+
         if (OnMovementEvent != null)
             OnMovementEvent(InputManager.ActiveDevice.LeftStick);
 
-        if (OnLookEvent != null)
+        if (OnLookEvent != null) {
             OnLookEvent(InputManager.ActiveDevice.RightStick);
+        }
+        if (rightStickInput.X == 0 && rightStickInput.Y == 1) { // Start Combo
+            checkCombo = true;
+        }
+        if (InputManager.ActiveDevice.Action1.WasReleased) {
+            if (OnActionKeyPressedEvent != null)
+                OnActionKeyPressedEvent();
+        }
+        if (checkCombo) {
+            currentComboTime += Time.deltaTime;
+            bool condition = false;
+
+            while (!condition) {
+                condition = CheckForCombo(currentComboTime);
+            }
+
+            if (condition) {
+                if (circleCombo.comboCompleted) {
+                    _gameManager.playerScore++;
+                    checkCombo = false;
+                } 
+            }
+            if (currentComboTime >= comboTimeLength) {
+                checkCombo = false;
+                currentComboTime = 0f;
+                Debug.Log("Took too long!");
+            }
+        } else {
+            circleCombo.index = 0;
+            circleCombo.comboCompleted = false;
+            currentComboTime = 0f;
+        }
+
+    }
+    bool CheckForCombo(float time) {
+
+        if (rightStickInput.X == 0 && rightStickInput.Y == 0)
+            return true;
+
+        if (circleCombo.CheckInput(rightStickInput)) {
+            if (circleCombo.index >= circleCombo.GetComboLength() - 1) {
+                circleCombo.comboCompleted = true;
+                Debug.Log("Combo Completed");
+                return true;
+            }
+            Debug.Log("Index is " + circleCombo.index);
+            circleCombo.index++;
+            return false;
+        } else {
+            return true;
+        }
+
     }
 }

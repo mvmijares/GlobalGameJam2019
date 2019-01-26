@@ -9,7 +9,12 @@ public class GameManager : MonoBehaviour {
 
     [SerializeField] private FirstPersonCamera playerCamera;
     public FirstPersonCamera GetPlayerCamera() { return playerCamera; }
+
+    [SerializeField] private CheckObjectCamera checkObjectCamera;
+    public CheckObjectCamera GetCheckObjectCamera() { return checkObjectCamera; }
     public int playerScore;
+
+    public List<InteractableObject> interfactableObjectList;
 
     #endregion
     private void Awake() {
@@ -21,7 +26,21 @@ public class GameManager : MonoBehaviour {
         if (playerCamera)
             playerCamera.InitializePlayerCamera(this);
 
+        checkObjectCamera = FindObjectOfType<CheckObjectCamera>();
+        if (checkObjectCamera)
+            checkObjectCamera.InitializeCheckObjectCamera(this);
+
         playerCamera.target = player.headPosition;
+
+        interfactableObjectList = new List<InteractableObject>();
+
+        InteractableObject[] interactableObjects = FindObjectsOfType<InteractableObject>();
+
+        foreach (InteractableObject i in interactableObjects) {
+            i.InitializeInteractableObject(this);
+            interfactableObjectList.Add(i);
+        }
+
     }
     private void OnEnable() {
         player.RegisterPlayerEvents();
@@ -34,12 +53,14 @@ public class GameManager : MonoBehaviour {
     private void Update() {
         if (player) {
             player.UpdatePlayer();
-
         }
     }
 
     private void LateUpdate() {
         if (playerCamera)
             playerCamera.UpdatePlayerCamera();
+
+        if (checkObjectCamera)
+            checkObjectCamera.UpdateCheckObjectCamera();
     }
 }

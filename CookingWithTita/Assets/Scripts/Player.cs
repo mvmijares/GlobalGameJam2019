@@ -33,7 +33,7 @@ public class Player : MonoBehaviour {
     public void InitializePlayer(GameManager gameManager) {
         _gameManager = gameManager;
         _playerInput = GetComponent<PlayerInput>();
-        _playerInput.InitializePlayerController(this);
+        _playerInput.InitializePlayerController(this, gameManager);
     }
 
     public void RegisterPlayerEvents() {
@@ -57,4 +57,6 @@ public class Player : MonoBehaviour {
             transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
         }
     }
+
+    
 }

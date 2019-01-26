@@ -5,6 +5,7 @@ using UnityEngine;
 public class FirstPersonCamera : MonoBehaviour {
     #region Data
     GameManager _gameManager;
+    public Camera interactCamera;
     public Transform target;
     [SerializeField] Vector2 lookDirection;
     public float controllerSensitivity = 1f;
@@ -21,7 +22,7 @@ public class FirstPersonCamera : MonoBehaviour {
     #endregion
     public void InitializePlayerCamera(GameManager gameManager) {
         _gameManager = gameManager;
-
+        interactCamera = transform.GetChild(0).GetComponent<Camera>();
     }
     public void RegisterPlayerCameraEvents() {
         _gameManager.GetPlayer().playerInput.OnLookEvent += OnLookEventCalled;
@@ -31,8 +32,7 @@ public class FirstPersonCamera : MonoBehaviour {
     }
     public void UpdatePlayerCamera() {
         yaw += lookDirection.x * controllerSensitivity;
-        pitch += lookDirection.y * controllerSensitivity;
-
+        pitch += lookDirection.y * controllerSensitivity * -1;
         pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
 
         currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVel, rotationSmoothTime);
