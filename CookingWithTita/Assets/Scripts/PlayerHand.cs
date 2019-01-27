@@ -38,19 +38,31 @@ public class PlayerHand : MonoBehaviour {
             i++;
         }
         if (selectedObject != null) {
-            if(selectedObject.name != "Lumpia")
-                CreateFoodClone(selectedObject.name);
-            else {
-                heldItem = selectedObject;
-                heldItem.transform.position = raycastPoint.position;
-                heldItem.SetParent(this.transform);
-                selectedObject = null;
+            if (selectedObject.GetComponent<PrepIngredient>()) {
+                if (selectedObject.GetComponent<PrepIngredient>().isWrong) {
+                    selectedObject.GetComponent<PrepIngredient>().isWrong = false;
+                    heldItem = selectedObject;
+                    heldItem.GetComponent<Rigidbody>().isKinematic = true;
+                    heldItem.transform.position = raycastPoint.position;
+                    heldItem.SetParent(this.transform);
+                    selectedObject = null;
+                }
+            } else {
+                if (selectedObject.name != "Lumpia")
+                    CreateFoodClone(selectedObject.name);
+                else {
+                    heldItem = selectedObject;
+                    heldItem.transform.position = raycastPoint.position;
+                    heldItem.SetParent(this.transform);
+                    selectedObject = null;
+                }
             }
         }
     }
 
     void CreateFoodClone(string name) {
         if (name != "Lumpia") {
+            Debug.Log("name : " + name);
             Transform clone = Instantiate(foodPrefab, raycastPoint.position, foodPrefab.rotation);
             clone.GetComponent<MeshRenderer>().sharedMaterial = GetMaterial(name);
             clone.name = name;
@@ -59,7 +71,9 @@ public class PlayerHand : MonoBehaviour {
             selectedObject = null;
         } 
     }
+    public void PlayLumpiaMusic() {
 
+    }
     Material GetMaterial(string name) {
         Material newMat = null;
         switch (name) {

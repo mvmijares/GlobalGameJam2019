@@ -15,7 +15,42 @@ ModelImporter:
     2300000: //RootNode
     3300000: //RootNode
     4300000: Box011
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BnW_Gradient
+    second: {fileID: 2100000, guid: e8d89c39d9a518e4b986ef7028691588, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #66'
+    second: {fileID: 2100000, guid: 76868d2311fcdac4f99a46f559fe1e75, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #67'
+    second: {fileID: 2100000, guid: 453455e935affc341800eacbe73b70d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #79'
+    second: {fileID: 2100000, guid: 890b6887e0a4e2c4aa0f243c9edd540a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #91'
+    second: {fileID: 2100000, guid: 6164c8c8ec33d7e4892d9c5d4a2658f0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #92'
+    second: {fileID: 2100000, guid: d7846b4fc486fad49a078a08ac24e695, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: OjP_Gradient
+    second: {fileID: 2100000, guid: 663e25a89cbfbbb4796cf49a3a8a861b, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

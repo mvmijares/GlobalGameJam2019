@@ -10,11 +10,10 @@ using InControl;
 /// It will fire off events for input. If other classes need it, just register the input event
 /// </summary>
 
-public enum JoystickDirection { Clockwise, CounterClockwise } // Add later
 [Serializable]
 public class JoystickCombo {
     public string name;
-    List<Vector2> joystickPositions;
+    public List<Vector2> joystickPositions;
     public int index;
     public float lowerDeadZoneX;
     public float upperDeadZoneX;
@@ -23,22 +22,38 @@ public class JoystickCombo {
     public float upperDeadZoneY;
 
     public bool comboCompleted;
+
     public JoystickCombo(string name) {
         joystickPositions = new List<Vector2>();
         index = 0;
         switch (name) {
-            case "Circle": {
+            case "Clockwise": {
                     this.name = name;
-                    joystickPositions = CreateCircleInputs();
+                    joystickPositions = CreateClockwiseCircleInputs();
+                    break;
+                }
+            case "CounterClockwise": {
+                    this.name = name;
+                    joystickPositions = CreateCounterClockwiseCircleInputs();
                     break;
                 }
         }
         comboCompleted = false;
     }
-    List<Vector2> CreateCircleInputs() {
+    List<Vector2> CreateClockwiseCircleInputs() {
         List<Vector2> newList = new List<Vector2>();
 
         newList.Add(new Vector2(0,1));
+        newList.Add(new Vector2(1, 0));
+        newList.Add(new Vector2(0, -1));
+        newList.Add(new Vector2(-1, 0));
+        newList.Add(new Vector2(0, 1));
+
+        return newList;
+    }
+    List<Vector2> CreateCounterClockwiseCircleInputs() {
+        List<Vector2> newList = new List<Vector2>();
+        newList.Add(new Vector2(0, 1));
         newList.Add(new Vector2(-1, 0));
         newList.Add(new Vector2(0, -1));
         newList.Add(new Vector2(1, 0));
@@ -93,6 +108,9 @@ public class PlayerInput : MonoBehaviour {
     public event Action<Vector2> OnMovementEvent;
     public event Action<Vector2> OnLookEvent;
     public event Action OnActionKeyPressedEvent;
+    public event Action OnLeftBumperPressedEvent;
+    public event Action OnRightBumperPressedEvent;
+
 
     #endregion
     public void InitializePlayerController(Player player, GameManager gameManager) {
@@ -120,60 +138,67 @@ public class PlayerInput : MonoBehaviour {
         if (OnLookEvent != null) {
             OnLookEvent(InputManager.ActiveDevice.RightStick);
         }
-      
+        if (InputManager.ActiveDevice.LeftBumper.IsPressed) {
+            if (OnLeftBumperPressedEvent != null)
+                OnLeftBumperPressedEvent();
+        }
+        if (InputManager.ActiveDevice.RightBumper.IsPressed) {
+            if (OnRightBumperPressedEvent != null)
+                OnRightBumperPressedEvent();
+        }
         if (InputManager.ActiveDevice.Action1.WasReleased) {
             if (OnActionKeyPressedEvent != null)
                 OnActionKeyPressedEvent();
         }
 
-        CheckComboState();
-    }
-    void CheckComboState() {
-        if (rightStickInput.X == 0 && rightStickInput.Y == 1) { // Start Combo
-            checkCombo = true;
-        }
-        if (checkCombo) {
-            currentComboTime += Time.deltaTime;
-            bool condition = false;
-
-            while (!condition) {
-                condition = CheckForCombo(currentComboTime);
-            }
-
-            if (condition) {
-                if (circleCombo.comboCompleted) {
-                    _gameManager.playerScore++;
-                    checkCombo = false;
-                }
-            }
-            if (currentComboTime >= comboTimeLength) {
-                checkCombo = false;
-                currentComboTime = 0f;
-                Debug.Log("Took too long!");
-            }
-        } else {
-            circleCombo.index = 0;
-            circleCombo.comboCompleted = false;
-            currentComboTime = 0f;
-        }
-    }
-    bool CheckForCombo(float time) {
-
-        if (rightStickInput.X == 0 && rightStickInput.Y == 0)
-            return true;
-
-        if (circleCombo.CheckInput(rightStickInput)) {
-            if (circleCombo.index >= circleCombo.GetComboLength() - 1) {
-                circleCombo.comboCompleted = true;
-                Debug.Log("Combo Completed");
-                return true;
-            }
-            Debug.Log("Index is " + circleCombo.index);
-            circleCombo.index++;
-            return false;
-        } else {
-            return true;
-        }
 
     }
+    //void CheckComboState() {
+    //    if (rightStickInput.X == 0 && rightStickInput.Y == 1) { // Start Combo
+    //        checkCombo = true;
+    //    }
+    //    if (checkCombo) {
+    //        currentComboTime += Time.deltaTime;
+    //        bool condition = false;
+
+    //        while (!condition) {
+    //            condition = CheckForCombo(currentComboTime);
+    //        }
+
+    //        if (condition) {
+    //            if (circleCombo.comboCompleted) {
+    //                _gameManager.playerScore++;
+    //                checkCombo = false;
+    //            }
+    //        }
+    //        if (currentComboTime >= comboTimeLength) {
+    //            checkCombo = false;
+    //            currentComboTime = 0f;
+    //            Debug.Log("Took too long!");
+    //        }
+    //    } else {
+    //        circleCombo.index = 0;
+    //        circleCombo.comboCompleted = false;
+    //        currentComboTime = 0f;
+    //    }
+    //}
+    //bool CheckForCombo(float time) {
+
+    //    if (rightStickInput.X == 0 && rightStickInput.Y == 0)
+    //        return true;
+
+    //    if (circleCombo.CheckInput(rightStickInput)) {
+    //        if (circleCombo.index >= circleCombo.GetComboLength() - 1) {
+    //            circleCombo.comboCompleted = true;
+    //            Debug.Log("Combo Completed");
+    //            return true;
+    //        }
+    //        Debug.Log("Index is " + circleCombo.index);
+    //        circleCombo.index++;
+    //        return false;
+    //    } else {
+    //        return true;
+    //    }
+
+    //}
 }
