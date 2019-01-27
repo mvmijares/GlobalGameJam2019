@@ -12,6 +12,7 @@ public class FirstPersonCamera : MonoBehaviour {
     float yaw;
     float pitch;
     public Vector2 pitchMinMax = new Vector3(-40, 85);
+    public Vector2 yawMinMax = new Vector3(-40, 85);
     Vector3 currentRotation;
     float dstFromTarget = 1;
     public float rotationSmoothTime = .12f;
@@ -32,6 +33,7 @@ public class FirstPersonCamera : MonoBehaviour {
     }
     public void UpdatePlayerCamera() {
         yaw += lookDirection.x * controllerSensitivity;
+        yaw = Mathf.Clamp(yaw, yawMinMax.x, yawMinMax.y);
         pitch += lookDirection.y * controllerSensitivity * -1;
         pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
 

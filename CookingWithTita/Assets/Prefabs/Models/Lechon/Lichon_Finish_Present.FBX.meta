@@ -1,57 +1,16 @@
 fileFormatVersion: 2
-guid: 201f0bb6093aec744b11cb7206a74154
+guid: 80182f94c1e33484588773ad0e75d082
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Box011
-    100004: Kitchen
-    100006: Line001
-    100008: LumpiaWrapper
-    100010: MincedMeat
-    100012: MincedVeg
-    100014: Shrimp
     400000: //RootNode
-    400002: Box011
-    400004: Kitchen
-    400006: Line001
-    400008: LumpiaWrapper
-    400010: MincedMeat
-    400012: MincedVeg
-    400014: Shrimp
-    2100000: 'Material #24'
-    2100002: No Name
-    2100004: OjP_Gradient
-    2100006: 'Material #66'
-    2100008: 'Material #92'
-    2100010: BnW_Gradient
-    2100012: 'Material #91'
-    2100014: 'Material #79'
-    2100016: 'Material #67'
+    2100000: 'Material #67'
+    2100002: 'Material #66'
+    2100004: 'Material #65'
     2300000: //RootNode
-    2300002: Box011
-    2300004: Kitchen
-    2300006: Line001
-    2300008: LumpiaWrapper
-    2300010: MincedMeat
-    2300012: MincedVeg
-    2300014: Shrimp
     3300000: //RootNode
-    3300002: Box011
-    3300004: Kitchen
-    3300006: Line001
-    3300008: LumpiaWrapper
-    3300010: MincedMeat
-    3300012: MincedVeg
-    3300014: Shrimp
-    4300000: Kitchen
-    4300002: LumpiaWrapper
-    4300004: MincedMeat
-    4300006: Shrimp
-    4300008: MincedVeg
-    4300010: Box011
-    4300012: Line001
-    2186277476908879412: ImportLogs
+    4300000: Lichon_Finish
   externalObjects: {}
   materials:
     importMaterials: 1

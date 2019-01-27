@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MiniGame { None, Lumpia, Lechon, HaloHalo}
+public enum MiniGame { None, Exploration, Lumpia, Lechon, HaloHalo}
 
 public class GameManager : MonoBehaviour {
     #region Data
@@ -32,17 +32,26 @@ public class GameManager : MonoBehaviour {
 
     string objectName;
 
+    private TitleScreen titleScreen;
     public LumpiaMinigame lumpiaMinigame;
+
+    public float distanceFromLumpia;
     #endregion
     private void Awake() {
         player = FindObjectOfType<Player>();
         if (player)
             player.InitializePlayer(this);
 
+        titleScreen = FindObjectOfType<TitleScreen>();
+        if (titleScreen)
+            titleScreen.InitializeTitleScreen(this);
+
+  
         playerCamera = FindObjectOfType<FirstPersonCamera>();
         if (playerCamera)
             playerCamera.InitializePlayerCamera(this);
 
+        
         checkObjectCamera = FindObjectOfType<CheckObjectCamera>();
         if (checkObjectCamera)
             checkObjectCamera.InitializeCheckObjectCamera(this);
@@ -68,13 +77,19 @@ public class GameManager : MonoBehaviour {
         InitializeLumpiaMiniGame();
     }
     public void InteractWithObjectEventCalled(Transform t) {
-        switch (t.name) {
-            case "Lumpia": {
-                    switchScreen = true;
-                    objectName = t.name;
-
-                    break;
-                }
+        if (miniGame == MiniGame.Exploration) {
+          
+            switch (t.name) {
+                case "Lumpia": {
+                        if ((t.transform.position - player.transform.position).magnitude < distanceFromLumpia) {
+                            switchScreen = true;
+                            objectName = t.name;
+                        } else {
+                            Debug.Log("Too far");
+                        }
+                        break;
+                    }
+            }
         }
     }
     private void OnEnable() {
@@ -93,6 +108,11 @@ public class GameManager : MonoBehaviour {
         }
         switch (miniGame) {
             case MiniGame.None: {
+                    titleScreen.UpdateTitleScreen();
+                    break;
+                }
+            case MiniGame.Exploration: {
+
                     Exploration();
                     break;
                 }
@@ -131,6 +151,7 @@ public class GameManager : MonoBehaviour {
                         loadingScreenAlpha -= Time.deltaTime;
 
                     loadingScreen.SetLoadingScreenAlpha(loadingScreenAlpha);
+
                 } else {
                     currentWaitTime = 0f;
                     currentSceneTime = 0f;
