@@ -10,10 +10,13 @@ ModelImporter:
     400002: //RootNode
     400004: Line001
     2100000: 'Material #24'
+    2100002: BnW_Gradient
     2300000: Cylinder001
     2300002: Line001
+    2300004: //RootNode
     3300000: Cylinder001
     3300002: Line001
+    3300004: //RootNode
     4300000: Cylinder001
     4300002: Line001
   externalObjects: {}

@@ -1,46 +1,16 @@
 fileFormatVersion: 2
-guid: baa3b3d36fecab143af596ab3f7a80d4
+guid: d8ab3406f20812b4db1d17d61f23dcdb
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Box003
-    100002: Box004
-    100004: Box008
-    100006: Box009
-    100008: //RootNode
-    100010: Sphere001
-    400000: Box003
-    400002: Box004
-    400004: Box008
-    400006: Box009
-    400008: //RootNode
-    400010: Sphere001
-    2100000: 'Material #24'
+    100000: //RootNode
+    400000: //RootNode
+    2100000: 'Material #92'
     2100002: OjP_Gradient
-    2100004: 'Material #66'
-    2100006: 'Material #92'
-    2100008: BnW_Gradient
-    2100010: 'Material #91'
-    2100012: 'Material #79'
-    2100014: 'Material #67'
-    2300000: Box003
-    2300002: Box004
-    2300004: Box008
-    2300006: Box009
-    2300008: Sphere001
-    2300010: //RootNode
-    3300000: Box003
-    3300002: Box004
-    3300004: Box008
-    3300006: Box009
-    3300008: Sphere001
-    3300010: //RootNode
-    4300000: Sphere001
-    4300002: Box003
-    4300004: Box004
-    4300006: Box008
-    4300008: Box009
-    4300010: Box011
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Lichon_Board
+    2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
     importMaterials: 1

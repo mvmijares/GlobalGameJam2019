@@ -120,12 +120,17 @@ public class PlayerInput : MonoBehaviour {
         if (OnLookEvent != null) {
             OnLookEvent(InputManager.ActiveDevice.RightStick);
         }
-        if (rightStickInput.X == 0 && rightStickInput.Y == 1) { // Start Combo
-            checkCombo = true;
-        }
+      
         if (InputManager.ActiveDevice.Action1.WasReleased) {
             if (OnActionKeyPressedEvent != null)
                 OnActionKeyPressedEvent();
+        }
+
+        CheckComboState();
+    }
+    void CheckComboState() {
+        if (rightStickInput.X == 0 && rightStickInput.Y == 1) { // Start Combo
+            checkCombo = true;
         }
         if (checkCombo) {
             currentComboTime += Time.deltaTime;
@@ -139,7 +144,7 @@ public class PlayerInput : MonoBehaviour {
                 if (circleCombo.comboCompleted) {
                     _gameManager.playerScore++;
                     checkCombo = false;
-                } 
+                }
             }
             if (currentComboTime >= comboTimeLength) {
                 checkCombo = false;
@@ -151,7 +156,6 @@ public class PlayerInput : MonoBehaviour {
             circleCombo.comboCompleted = false;
             currentComboTime = 0f;
         }
-
     }
     bool CheckForCombo(float time) {
 

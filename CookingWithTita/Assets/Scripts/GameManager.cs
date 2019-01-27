@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private float currentWaitTime;
 
     string objectName;
+
+    public LumpiaMinigame lumpiaMinigame;
     #endregion
     private void Awake() {
         player = FindObjectOfType<Player>();
@@ -61,13 +63,16 @@ public class GameManager : MonoBehaviour {
         loadingScreen = FindObjectOfType<LoadingScreen>();
         if(loadingScreen)
             loadingScreen.InitializeLoadingScreen(this);
-     
+
+
+        InitializeLumpiaMiniGame();
     }
     public void InteractWithObjectEventCalled(Transform t) {
         switch (t.name) {
             case "Lumpia": {
                     switchScreen = true;
                     objectName = t.name;
+
                     break;
                 }
         }
@@ -97,7 +102,12 @@ public class GameManager : MonoBehaviour {
                 }
         }
     }
+    void InitializeLumpiaMiniGame() {
+        lumpiaMinigame = FindObjectOfType<LumpiaMinigame>();
 
+        if (lumpiaMinigame)
+            lumpiaMinigame.InitializeLumpiaMinigame(this);
+    }
     void Exploration() {
         if (switchScreen) {
             currentSceneTime += Time.deltaTime;
@@ -106,6 +116,12 @@ public class GameManager : MonoBehaviour {
                     loadingScreenAlpha += Time.deltaTime;
                 else {
                     playerCamera.gameObject.SetActive(false);
+                    switch (objectName) {
+                        case "Lumpia": {
+                                lumpiaMinigame.SetGameplayCamera(true);
+                                break;
+                            }
+                    }
                 }
                 loadingScreen.SetLoadingScreenAlpha(loadingScreenAlpha);
             } else {
@@ -131,7 +147,7 @@ public class GameManager : MonoBehaviour {
     }
 
     void LumpiaMiniGame() {
-
+        lumpiaMinigame.UpdateMiniGame();
     }
 
     private void LateUpdate() {
