@@ -18690,7 +18690,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8cd0f6e96bf58f845b8ca7234dccdb94, type: 3}
   - {fileID: 21300000, guid: ca5a610f10351e94c993488320369dcc, type: 3}
   - {fileID: 21300000, guid: 6f941962add34cd40a078efddf142369, type: 3}
-  miniGameDuration: 60
+  miniGameDuration: 2
 --- !u!1 &1901903185
 GameObject:
   m_ObjectHideFlags: 0
