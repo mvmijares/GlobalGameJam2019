@@ -12,7 +12,6 @@ public class CreditsScene : MonoBehaviour {
         _gameManager = gameManager;
     
     }
-
     public void SetPlayerLocation() {
         _gameManager.GetPlayer().transform.position = playerSpawnLocation.position;
         _gameManager.GetPlayerCamera().gameObject.SetActive(true);

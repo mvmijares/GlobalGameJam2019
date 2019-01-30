@@ -43,6 +43,7 @@ public class TitleScreen : MonoBehaviour {
         imageList.Add(TitaImage);
         imageList.Add(ActionKeyImage);
         imageList.Add(backgroundImage);
+
         _gameManager.GetPlayer().playerInput.OnActionKeyPressedEvent += OnActionKeyPressedCalled;
 
     }
@@ -85,9 +86,10 @@ public class TitleScreen : MonoBehaviour {
                     anim = TitaImage.GetComponent<Animator>();
                     anim.SetBool("Play", true);
                     if (TitaImage.GetComponent<UserInterfaceAnimation>().state == AnimationState.IsFinished) {
+                        imageState = ImageState.Ready;
                         anim.SetBool("Play", false);
                         anim = null;
-                        imageState = ImageState.Ready;
+                
                     }
                     break;
                 }

@@ -15,60 +15,63 @@ public class TitaDialogue : MonoBehaviour {
     public Transform titaImage;
     public TextMeshProUGUI proUGUI;
 
-    bool isCoroutineRunning = false;
-    bool isPlaying = false;
-    bool isLoaded = false;
+    [SerializeField] bool isCoroutineRunning = false;
+    [SerializeField] bool isPlaying = false;
+    [SerializeField] bool isLoaded = false;
+
+    private float currentWaitTimer = 0f;
+    public float waitTimeForDialogue = 1f;
+    [SerializeField] bool isFinished;
+    bool waitForNextDialogue;
+    [SerializeField] int index;
+
     public void InitializeDialogue(GameManager gameManager) {
         _gameManager = gameManager;
-        sentences = new Queue<string>();
         proUGUI.gameObject.SetActive(false);
         titaImage.gameObject.SetActive(false);
-
+        index = 0;
+        waitForNextDialogue = false;
+        isFinished = false;
     }
-    public void StartDialogue() {
-        proUGUI.gameObject.SetActive(true);
-        titaImage.gameObject.SetActive(true);
-
-        sentences.Clear();
-
-        if (!isLoaded) { 
-            foreach (string s in lines) {
-                sentences.Enqueue(s);
+    public void PlayDialogue() {
+        if (!isFinished) {
+            proUGUI.gameObject.SetActive(true);
+            titaImage.gameObject.SetActive(true);
+        } else {
+            proUGUI.gameObject.SetActive(false);
+            titaImage.gameObject.SetActive(false);
+        }
+        if (waitForNextDialogue) {
+            currentWaitTimer += Time.deltaTime;
+            if (currentWaitTimer >= waitTimeForDialogue) {
+                currentWaitTimer = 0f;
+                if (index < lines.Length - 1) {
+                    index++;
+                } else {
+                    isFinished = true;
+                }
+                waitForNextDialogue = false;
             }
-            isLoaded = true;
-        }
-        if (!isPlaying)
+        } else {
             DisplayNextSentence();
-
+        }
     }
+
     void DisplayNextSentence() {
-        isPlaying = true;
-        if (sentences.Count == 0) {
-            isPlaying = false;
-            return;
+        if (!isCoroutineRunning && !isFinished) {
+            StartCoroutine(TypeSentence(lines[index]));
         }
-        string sentence = sentences.Dequeue();
-
-        StopAllCoroutines();
-        if(!isCoroutineRunning) 
-            StartCoroutine(TypeSentence(sentence));
-
-        if (proUGUI.text.Length == sentence.Length) {
-            isCoroutineRunning = false;
-            isPlaying = false;
-        }
-
     }
     IEnumerator TypeSentence(string sentence) {
         isCoroutineRunning = true;
         proUGUI.text = "";
         foreach(char letter in sentence.ToCharArray()) {
             proUGUI.text += letter;
-            if (proUGUI.text.Length == sentence.ToCharArray().Length - 1) {
-                isCoroutineRunning = false;
-                isPlaying = false;
-            }
             yield return null;
+            if (proUGUI.text.Length >= sentence.Length) {
+                waitForNextDialogue = true;
+                isCoroutineRunning = false;
+            }
         }
     }
 

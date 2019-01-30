@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour {
     public LechonMinigame lechonMinigame;
     public CreditsScene creditsScene;
     public float distanceFromLumpia;
+
+    public bool credits;
     #endregion
     private void Awake() {
 
@@ -68,6 +70,9 @@ public class GameManager : MonoBehaviour {
         playerCamera = FindObjectOfType<FirstPersonCamera>();
         if (playerCamera)
             playerCamera.InitializePlayerCamera(this);
+
+        miniGame = MiniGame.None;
+
         titleScreen = FindObjectOfType<TitleScreen>();
         if (titleScreen)
             titleScreen.InitializeTitleScreen(this);
@@ -95,7 +100,7 @@ public class GameManager : MonoBehaviour {
         creditsScene = FindObjectOfType<CreditsScene>();
         if (creditsScene)
             creditsScene.InitializeCreditsScene(this);
-        miniGame = MiniGame.None;
+
 
         loadingScreen = FindObjectOfType<LoadingScreen>();
         if(loadingScreen)
@@ -105,6 +110,8 @@ public class GameManager : MonoBehaviour {
         InitializeLumpiaMiniGame();
         InitializeLechonMiniGame();
         volume = 0.5f;
+
+        credits = false;
 
         audioSource = GetComponent<AudioSource>();
         audioSource.clip = introMusic;
@@ -152,7 +159,6 @@ public class GameManager : MonoBehaviour {
         if (player) {
             player.UpdatePlayer();
         }
-   
         switch (miniGame) {
             case MiniGame.None: {
                     titleScreen.UpdateTitleScreen();
@@ -174,6 +180,10 @@ public class GameManager : MonoBehaviour {
                     CreditsScene();
                     break;
                 }
+        }
+
+        if (switchScreen) {
+            SwitchScene();
         }
     }
 
@@ -206,8 +216,8 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    void Exploration() {
-        titaDialogue.StartDialogue();
+    private void Exploration() {
+        titaDialogue.PlayDialogue();
         SwitchScene();
     }
     public void SwitchScene() {
@@ -218,21 +228,23 @@ public class GameManager : MonoBehaviour {
                     loadingScreenAlpha += Time.deltaTime;
                 else {
                     playerCamera.gameObject.SetActive(false);
-                    switch (objectName) {
-                        case "Lumpia": {
-                                lumpiaMinigame.SetGameplayCamera(true);
-                                break;
-                            }
-                        case "Lechon": {
-                                lumpiaMinigame.SetGameplayCamera(false);
-                                lechonMinigame.SetGameplayCamera(true);
-                                break;
-                            }
-                        case "Credits": {
-                                playerCamera.gameObject.SetActive(true);
-                                creditsScene.SetPlayerLocation();
-                                break;
-                            }
+                    if (!credits) {
+                        switch (objectName) {
+                            case "Lumpia": {
+                                    lumpiaMinigame.SetGameplayCamera(true);
+                                    break;
+                                }
+                            case "Lechon": {
+                                    lumpiaMinigame.SetGameplayCamera(false);
+                                    lechonMinigame.SetGameplayCamera(true);
+                                    break;
+                                }
+                        }
+                    } else {
+                        miniGame = MiniGame.Credits;
+                        lechonMinigame.SetGameplayCamera(false);
+                        playerCamera.gameObject.SetActive(true);
+                        creditsScene.SetPlayerLocation();
                     }
                 }
                 loadingScreen.SetLoadingScreenAlpha(loadingScreenAlpha);
@@ -248,21 +260,18 @@ public class GameManager : MonoBehaviour {
                     currentWaitTime = 0f;
                     currentSceneTime = 0f;
                     switchScreen = false;
-                    switch (objectName) {
-                        case "Lumpia": {
-                                miniGame = MiniGame.Lumpia;
-                                lumpiaMinigame.startTimer = true;
-                                break;
-                            }
-                        case "Lechon": {
-                                miniGame = MiniGame.Lechon;
-                                break;
-                            }
-                        case "Credits": {
-                                miniGame = MiniGame.Credits;
-                               
-                                break;
-                            }
+                    if (!credits) {
+                        switch (objectName) {
+                            case "Lumpia": {
+                                    miniGame = MiniGame.Lumpia;
+                                    lumpiaMinigame.startTimer = true;
+                                    break;
+                                }
+                            case "Lechon": {
+                                    miniGame = MiniGame.Lechon;
+                                    break;
+                                }
+                        }
                     }
                 }
             }
@@ -273,13 +282,14 @@ public class GameManager : MonoBehaviour {
         currentSceneTime = 0.0f;
     }
     void LechonMiniGame() {
-
+        Debug.Log("Updating Lechon");
         if (!lechonMinigame.lechonCamera.gameObject.activeSelf)
             lechonMinigame.lechonCamera.gameObject.SetActive(true);
 
         if (audioSource.clip != lechonMusic) {
             PlayLechonMusic();
         }
+
         lechonMinigame.UpdateLechonMinigame();
     }
     void LumpiaMiniGame() {
