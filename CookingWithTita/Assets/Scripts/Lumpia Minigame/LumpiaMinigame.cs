@@ -151,11 +151,14 @@ public class LumpiaMinigame : MonoBehaviour {
     }
 
     public LumpiaCombo RequestNewReciepe() {
-        int index = Random.Range(0, lumpiaCombos.Count);
+        int index = Random.Range(0, lumpiaCombos.Count - 1);
+        Debug.Log("Lumpia index is " + index);
         return lumpiaCombos[index];
     }
+
     public Transform CreateIngrdient(string foodName) {
         Transform clone = Instantiate(foodPrefab, rightHand.raycastPoint.position, foodPrefab.rotation);
+        clone.GetComponent<PrepIngredient>().InitializePrepIngredient(_gameManager);
         clone.GetComponent<MeshRenderer>().sharedMaterial = GetMaterial(foodName);
         clone.name = foodName;
         clone.GetComponent<PrepIngredient>().destructionTime = foodDestructionTime;

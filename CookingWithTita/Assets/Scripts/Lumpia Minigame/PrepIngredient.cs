@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PrepIngredient : MonoBehaviour {
-    public bool isWrong;
+    public bool isPlaced;
     public bool isLumpia;
+    public bool destroy;
     private float currentTimer;
     public float destructionTime;
 
@@ -12,15 +13,25 @@ public class PrepIngredient : MonoBehaviour {
 
     public void InitializePrepIngredient(GameManager gameManager) {
         _gameManager = gameManager;
+        destroy = false;
 
     }
     public void Update() {
-        if (isWrong) {
+        if(destroy)
+            Destruction();
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        if(collision.gameObject.layer == LayerMask.NameToLayer("Ground")) {
             transform.position = _gameManager.lumpiaMinigame.trashCan.position;
-            currentTimer += Time.deltaTime;
-            if(currentTimer >= destructionTime) {
-                Destroy(this.gameObject);
-            }
+            destroy = true;
+        }
+    }
+
+    void Destruction() {
+        currentTimer += Time.deltaTime;
+        if (currentTimer >= destructionTime) {
+            Destroy(this.gameObject);
         }
     }
 }

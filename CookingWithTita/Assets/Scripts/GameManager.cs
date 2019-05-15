@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour {
     public AudioSource audioSource;
     [SerializeField] private Player player;
     public Player GetPlayer() { return player; }
-
-
     float volume; 
 
     public void OnLeftBumperPressedEventCalled() {
@@ -57,6 +55,9 @@ public class GameManager : MonoBehaviour {
     public LumpiaMinigame lumpiaMinigame;
     public LechonMinigame lechonMinigame;
     public CreditsScene creditsScene;
+
+    bool startDialogue = false;
+    
     public float distanceFromLumpia;
 
     public bool credits;
@@ -125,7 +126,7 @@ public class GameManager : MonoBehaviour {
                         if ((t.transform.position - player.transform.position).magnitude < distanceFromLumpia) {
                             switchScreen = true;
                             objectName = t.name;
-                        } 
+                        }
                         break;
                     }
                 case "Lechon": {
@@ -135,7 +136,11 @@ public class GameManager : MonoBehaviour {
                         }
                         break;
                     }
+
             }
+        } else if(miniGame == MiniGame.Credits) {
+            if (t.name == "Credits")
+                creditsScene.creditsUserInterface.EnableReciepeCard(true);
         }
     }
     private void OnEnable() {
@@ -181,6 +186,8 @@ public class GameManager : MonoBehaviour {
                     break;
                 }
         }
+        if(startDialogue)
+            titaDialogue.PlayDialogue();
 
         if (switchScreen) {
             SwitchScene();
@@ -217,7 +224,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Exploration() {
-        titaDialogue.PlayDialogue();
+        startDialogue = true;
         SwitchScene();
     }
     public void SwitchScene() {
@@ -282,7 +289,6 @@ public class GameManager : MonoBehaviour {
         currentSceneTime = 0.0f;
     }
     void LechonMiniGame() {
-        Debug.Log("Updating Lechon");
         if (!lechonMinigame.lechonCamera.gameObject.activeSelf)
             lechonMinigame.lechonCamera.gameObject.SetActive(true);
 
@@ -301,7 +307,8 @@ public class GameManager : MonoBehaviour {
     void CreditsScene() {
         if (audioSource.clip != creditsScene)
             PlayCreditsMusic();
-            
+
+        creditsScene.UpdateCreditsScene();
     }
     private void LateUpdate() {
         if (playerCamera)

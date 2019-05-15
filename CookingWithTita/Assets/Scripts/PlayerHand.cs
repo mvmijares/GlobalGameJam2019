@@ -29,7 +29,6 @@ public class PlayerHand : MonoBehaviour {
         while(i < hitColliders.Length) {
             if (selectedObject == null) { 
                 selectedObject = hitColliders[i].transform;
-
             } else {
                 float distance1 = (hitColliders[i].transform.position - raycastPoint.position).magnitude;
                 float distance2 = (selectedObject.transform.position - raycastPoint.position).magnitude;
@@ -42,8 +41,7 @@ public class PlayerHand : MonoBehaviour {
         if (selectedObject != null) {
             PrepIngredient component = selectedObject.GetComponent<PrepIngredient>();
             if (component) {
-                if (selectedObject.GetComponent<PrepIngredient>().isWrong) {
-                    selectedObject.GetComponent<PrepIngredient>().isWrong = false;
+                if (!selectedObject.GetComponent<PrepIngredient>().isPlaced) {
                     heldItem = selectedObject;
                     heldItem.GetComponent<Rigidbody>().isKinematic = true;
                     heldItem.transform.position = raycastPoint.position;
@@ -67,7 +65,6 @@ public class PlayerHand : MonoBehaviour {
     void CreateFoodClone(string name) {
         heldItem = _gameManager.lumpiaMinigame.CreateIngrdient(name);
         heldItem.SetParent(this.transform);
-  
     }
    
     

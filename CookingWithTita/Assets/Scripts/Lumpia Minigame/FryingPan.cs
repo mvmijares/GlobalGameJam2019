@@ -30,7 +30,7 @@ public class FryingPan : MonoBehaviour {
             Destroy(collision.gameObject);
         } else {
             if (collision.gameObject.GetComponent<PrepIngredient>()) {
-                collision.gameObject.GetComponent<PrepIngredient>().isWrong = true;
+                collision.gameObject.GetComponent<PrepIngredient>().isPlaced = false;
             }
         }
 

@@ -13,13 +13,11 @@ public class Ingredients {
     }
     public void SetReciepe(LumpiaCombo combo) {
         ingredientsList = combo._combo;
+        Debug.Log("Set Reciepe!");
     }
     public bool Contains(string ingredient) {
         if (ingredientsList.Contains(ingredient)) {
             ingredientsList.Remove(ingredient);
-            if (ingredientsList.Count == 0) {
-                isDone = true;
-            }
             return true;
         } else {
             return false;
@@ -55,8 +53,15 @@ public class Plate : MonoBehaviour {
         SetReciepe(_gameManager.lumpiaMinigame.RequestNewReciepe());
     }
     public void UpdatePlate() {
+        if (reciepeList.ingredientsList.Count <= 0)
+            reciepeList.isDone = true;
+
         if (reciepeList.isDone) {
             lumpiaMinigameUserInterface.ResetCard();
+
+            if(reciepeList.ingredientsList.Count <= 0)
+                SetReciepe(_gameManager.lumpiaMinigame.RequestNewReciepe());
+
             currentWaitTime += Time.deltaTime;
             if(currentWaitTime > maxWaitTime) {
                 DoneReciepe();
@@ -66,13 +71,10 @@ public class Plate : MonoBehaviour {
     }
 
     private void DoneReciepe() {
-        lumpiaMinigameUserInterface.ResetCard();
+        reciepeList.isDone = false;
         Transform clone = Instantiate(doneLumpiaPrefab, transform.position + new Vector3(0,0.5f,0), doneLumpiaPrefab.rotation);
         clone.name = doneLumpiaPrefab.name;
         clone.GetComponent<PrepIngredient>().isLumpia = true;
-        reciepeList.ingredientsList = null;
-        reciepeList.isDone = false;
-        SetReciepe(_gameManager.lumpiaMinigame.RequestNewReciepe());
     }
     public void SetReciepe(LumpiaCombo combo) {
         lumpiaMinigameUserInterface.SetCardImage(combo.sprite);
@@ -80,7 +82,7 @@ public class Plate : MonoBehaviour {
     }
     private void OnCollisionEnter(Collision other) {
         if (!reciepeList.Contains(other.transform.name)) {
-            other.transform.GetComponent<PrepIngredient>().isWrong = true;
+            other.transform.GetComponent<PrepIngredient>().isPlaced = false;
         } else {
             Destroy(other.gameObject);
         }
